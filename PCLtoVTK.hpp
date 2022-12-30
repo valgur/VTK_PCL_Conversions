@@ -3,6 +3,7 @@
 
 // PCL
 #include <pcl/common/common.h>
+#include <pcl/for_each_type.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
 
@@ -57,7 +58,7 @@ void PCLtoVTK(const CloudT& cloud, vtkPolyData* const pdata)
       pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "y_normal", has_normal_y, normal_y_val));
       pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "z_normal", has_normal_z, normal_z_val));
       float normal[3] = {normal_x_val, normal_y_val, normal_z_val};
-      normals->SetTupleValue(i, normal);
+      normals->SetTypedTuple(i, normal);
       }
     tempPolyData->GetPointData()->SetNormals(normals);
   }
@@ -82,7 +83,7 @@ void PCLtoVTK(const CloudT& cloud, vtkPolyData* const pdata)
       pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, unsigned char> (p, "g", has_g, g_val));
       pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, unsigned char> (p, "b", has_b, b_val));
       unsigned char color[3] = {r_val, g_val, b_val};
-      colors->SetTupleValue(i, color);
+      colors->SetTypedTuple(i, color);
       }
     tempPolyData->GetPointData()->SetScalars(colors);
   }
@@ -104,7 +105,7 @@ void PCLtoVTK(const CloudT& cloud, vtkStructuredGrid* const structuredGrid)
 
   typedef typename pcl::traits::fieldList<typename CloudT::PointType>::type FieldList;
   
-  int dimensions[3] = {cloud.width, cloud.height, 1};
+  int dimensions[3] = {(int)cloud.width, (int)cloud.height, 1};
   structuredGrid->SetDimensions(dimensions);
 
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
@@ -116,7 +117,7 @@ void PCLtoVTK(const CloudT& cloud, vtkStructuredGrid* const structuredGrid)
   {
     for (size_t j = 0; j < cloud.height; ++j)
     {
-      int queryPoint[3] = {i, j, 0};
+      int queryPoint[3] = {(int)i, (int)j, 0};
       vtkIdType pointId = vtkStructuredData::ComputePointId(dimensions, queryPoint);
       typename CloudT::PointType point = cloud(i,j);
 
@@ -150,7 +151,7 @@ void PCLtoVTK(const CloudT& cloud, vtkStructuredGrid* const structuredGrid)
     {
       for (size_t j = 0; j < cloud.height; ++j)
       {
-        int queryPoint[3] = {i, j, 0};
+        int queryPoint[3] = {(int)i, (int)j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId(dimensions, queryPoint);
         typename CloudT::PointType point = cloud(i,j);
 
@@ -161,7 +162,7 @@ void PCLtoVTK(const CloudT& cloud, vtkStructuredGrid* const structuredGrid)
           pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "y_normal", has_normal_y, normal_y_val));
           pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "z_normal", has_normal_z, normal_z_val));
           float normal[3] = {normal_x_val, normal_y_val, normal_z_val};
-          normals->SetTupleValue(pointId, normal);
+          normals->SetTypedTuple(pointId, normal);
         }
         else
         {
@@ -189,7 +190,7 @@ void PCLtoVTK(const CloudT& cloud, vtkStructuredGrid* const structuredGrid)
     {
       for (size_t j = 0; j < cloud.height; ++j)
       {
-        int queryPoint[3] = {i, j, 0};
+        int queryPoint[3] = {(int)i, (int)j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId(dimensions, queryPoint);
         typename CloudT::PointType point = cloud(i,j);
 
@@ -200,7 +201,7 @@ void PCLtoVTK(const CloudT& cloud, vtkStructuredGrid* const structuredGrid)
           pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, unsigned char> (p, "g", has_g, g_val));
           pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, unsigned char> (p, "b", has_b, b_val));
           unsigned char color[3] = {r_val, g_val, b_val};
-          colors->SetTupleValue(i, color);
+          colors->SetTypedTuple(i, color);
         }
         else
         {
